@@ -72,7 +72,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     // As telas abaixo ainda não existem; troque cada chamada quando criar a tela.
-    private void abrirClientes() { emConstrucao("Tela de Clientes"); }
+    private void abrirClientes() { new TelaCliente(usuario.isAdministrador()).setVisible(true); }
     private void abrirNovaOS()   { emConstrucao("Nova OS"); }
     private void abrirListaOS()  { emConstrucao("Consulta de OS"); }
 
