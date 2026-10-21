@@ -25,3 +25,4 @@ replay_pid*
 /PIE3RD/target/
 PIE3RD/os_manutencao.db
 PIE3RD/nbproject/private/
+PIE3RD/config.properties
