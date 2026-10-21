@@ -17,11 +17,13 @@ public class PIE3RD {
         }
 
         try {
-            Conexao.inicializar(); // cria o banco e os usuários de teste, se preciso
+            Conexao.testarConexao(); // confere se o MySQL do servidor está respondendo
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null,
-                    "Não foi possível iniciar o banco de dados:\n" + e.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+                    "Não foi possível conectar ao banco de dados.\n"
+                    + "Confira se o MySQL está ligado no servidor e se o config.properties está correto.\n\n"
+                    + "Detalhe: " + e.getMessage(),
+                    "Erro de conexão", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

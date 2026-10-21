@@ -23,7 +23,7 @@ public class OrdemServicoDAO {
         "id_cliente", "tipo_equipamento", "problema_relatado", "servico_a_realizar", "status",
         "data_entrada", "hora_entrada", "data_conclusao", "hora_conclusao", "data_retirada",
         "acessorio_fonte", "acessorios_outros", "formatacao", "sistema_formatacao",
-        "senha_equipamento", "backup", "pecas", "orcamento_outros",
+        "senha_equipamento", "fazer_backup", "pecas", "orcamento_outros",
         "total_pecas", "total_servicos", "valor"
     };
 
@@ -73,10 +73,10 @@ public class OrdemServicoDAO {
         String sql;
         if (concluiu) {
             sql = "UPDATE ordem_servico SET status = ?, "
-                + "data_conclusao = COALESCE(data_conclusao, date('now', 'localtime')), "
-                + "hora_conclusao = COALESCE(hora_conclusao, strftime('%H:%M', 'now', 'localtime')), "
+                + "data_conclusao = COALESCE(data_conclusao, CURDATE()), "
+                + "hora_conclusao = COALESCE(hora_conclusao, CURTIME()), "
                 + "data_retirada = CASE WHEN ? = 'Entregue' "
-                + "THEN COALESCE(data_retirada, date('now', 'localtime')) ELSE NULL END "
+                + "THEN COALESCE(data_retirada, CURDATE()) ELSE NULL END "
                 + "WHERE id_os = ?";
         } else {
             sql = "UPDATE ordem_servico SET status = ?, data_conclusao = NULL, "
@@ -208,7 +208,7 @@ public class OrdemServicoDAO {
         os.setFormatacao(rs.getInt("formatacao") != 0);
         os.setSistemaFormatacao(rs.getString("sistema_formatacao"));
         os.setSenhaEquipamento(rs.getString("senha_equipamento"));
-        os.setBackup(rs.getInt("backup") != 0);
+        os.setBackup(rs.getInt("fazer_backup") != 0);
         os.setPecas(rs.getString("pecas"));
         os.setOrcamentoOutros(rs.getString("orcamento_outros"));
         os.setTotalPecas(decimal(rs.getString("total_pecas")));

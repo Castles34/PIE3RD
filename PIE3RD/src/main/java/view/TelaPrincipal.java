@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -63,6 +64,12 @@ public class TelaPrincipal extends JFrame {
         initComponents();
         if (usuario.isAdministrador()) {
             carregarPainel();
+            // Os Caixas cadastram em outros computadores: a lista se atualiza sozinha
+            new Timer(30000, e -> {
+                if (!tblPainel.isEditing()) {
+                    carregarPainel(false);
+                }
+            }).start();
         }
     }
 
@@ -195,10 +202,21 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void carregarPainel() {
+        carregarPainel(true);
+    }
+
+    private void carregarPainel(boolean mostrarErro) {
+        int idSelecionado = -1;
+        int sel = tblPainel.getSelectedRow();
+        if (sel >= 0 && sel < emAberto.size()) {
+            idSelecionado = emAberto.get(sel).getId();
+        }
         try {
             emAberto = osDao.listarEmAberto();
         } catch (SQLException ex) {
-            erro("Erro de conexão com o banco de dados:\n" + ex.getMessage());
+            if (mostrarErro) {
+                erro("Erro de conexão com o banco de dados:\n" + ex.getMessage());
+            }
             return;
         }
         carregando = true;
@@ -216,6 +234,13 @@ public class TelaPrincipal extends JFrame {
             });
         }
         carregando = false;
+        // mantém a OS selecionada depois de atualizar
+        for (int i = 0; i < emAberto.size(); i++) {
+            if (emAberto.get(i).getId() == idSelecionado) {
+                tblPainel.setRowSelectionInterval(i, i);
+                break;
+            }
+        }
     }
 
     private void mudarStatus(int idOs, String novoStatus) {

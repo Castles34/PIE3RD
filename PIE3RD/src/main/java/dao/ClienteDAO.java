@@ -86,7 +86,7 @@ public class ClienteDAO {
     public Cliente obterOuCriar(String nome, String whatsapp) throws SQLException {
         try (Connection con = Conexao.getConnection()) {
             String busca = "SELECT id_cliente, nome, whatsapp FROM cliente "
-                    + "WHERE whatsapp = ? AND nome = ? COLLATE NOCASE LIMIT 1";
+                    + "WHERE whatsapp = ? AND nome = ? LIMIT 1"; // o MySQL já ignora maiúsculas/minúsculas
             try (PreparedStatement ps = con.prepareStatement(busca)) {
                 ps.setString(1, whatsapp);
                 ps.setString(2, nome);
@@ -106,7 +106,7 @@ public class ClienteDAO {
             novo.setNome(nome);
             novo.setWhatsapp(whatsapp);
             try (Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
+                 ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()")) {
                 rs.next();
                 novo.setId(rs.getInt(1));
             }
