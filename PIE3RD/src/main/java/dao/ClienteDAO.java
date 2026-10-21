@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Cliente;
@@ -63,6 +64,54 @@ public class ClienteDAO {
             }
         }
         return lista;
+    }
+
+    /** Cliente mais recente com esse WhatsApp (só dígitos), ou null. Usado para autopreencher a OS. */
+    public Cliente buscarPorWhatsapp(String digitos) throws SQLException {
+        String sql = "SELECT id_cliente, nome, whatsapp FROM cliente "
+                + "WHERE whatsapp = ? ORDER BY id_cliente DESC LIMIT 1";
+        try (Connection con = Conexao.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, digitos);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapear(rs) : null;
+            }
+        }
+    }
+
+    /**
+     * Usado ao salvar a OS: reaproveita o cliente que tem esse nome e WhatsApp;
+     * se não existir, cadastra um novo. Assim o cadastro do cliente "vem junto" com a OS.
+     */
+    public Cliente obterOuCriar(String nome, String whatsapp) throws SQLException {
+        try (Connection con = Conexao.getConnection()) {
+            String busca = "SELECT id_cliente, nome, whatsapp FROM cliente "
+                    + "WHERE whatsapp = ? AND nome = ? COLLATE NOCASE LIMIT 1";
+            try (PreparedStatement ps = con.prepareStatement(busca)) {
+                ps.setString(1, whatsapp);
+                ps.setString(2, nome);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return mapear(rs);
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement(
+                    "INSERT INTO cliente (nome, whatsapp) VALUES (?, ?)")) {
+                ps.setString(1, nome);
+                ps.setString(2, whatsapp);
+                ps.executeUpdate();
+            }
+            Cliente novo = new Cliente();
+            novo.setNome(nome);
+            novo.setWhatsapp(whatsapp);
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
+                rs.next();
+                novo.setId(rs.getInt(1));
+            }
+            return novo;
+        }
     }
 
     static Cliente mapear(ResultSet rs) throws SQLException {

@@ -1,5 +1,6 @@
--- Banco do Sistema de Ordens de Servico (SQLite)
--- O arquivo do banco sera criado automaticamente: os_manutencao.db
+-- Banco do Sistema de Ordens de Servico (SQLite) - versao 2
+-- A OS replica a ficha de papel da assistencia (cliente + equipamento + problema).
+-- O arquivo do banco e criado automaticamente: os_manutencao.db
 
 PRAGMA foreign_keys = ON;
 
@@ -14,7 +15,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 CREATE TABLE IF NOT EXISTS cliente (
     id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
     nome       TEXT NOT NULL,
-    whatsapp   TEXT NOT NULL
+    whatsapp   TEXT NOT NULL  -- somente digitos, com DDD
 );
 
 CREATE TABLE IF NOT EXISTS ordem_servico (
@@ -26,9 +27,22 @@ CREATE TABLE IF NOT EXISTS ordem_servico (
     servico_a_realizar     TEXT,
     status                 TEXT NOT NULL DEFAULT 'Aberta'
         CHECK (status IN ('Aberta', 'Em andamento', 'Aguardando peça', 'Concluída', 'Entregue')),
-    data_entrada           TEXT NOT NULL DEFAULT (date('now')),
+    data_entrada           TEXT NOT NULL DEFAULT (date('now', 'localtime')),
+    hora_entrada           TEXT,
     data_conclusao         TEXT,
-    valor                  REAL,
+    hora_conclusao         TEXT,
+    data_retirada          TEXT,
+    acessorio_fonte        INTEGER NOT NULL DEFAULT 0,
+    acessorios_outros      TEXT,
+    formatacao             INTEGER NOT NULL DEFAULT 0,
+    sistema_formatacao     TEXT,
+    senha_equipamento      TEXT,
+    backup                 INTEGER NOT NULL DEFAULT 0,
+    pecas                  TEXT,
+    orcamento_outros       TEXT,
+    total_pecas            REAL,
+    total_servicos         REAL,
+    valor                  REAL,  -- total = pecas + servicos
     FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente),
     FOREIGN KEY (id_usuario_responsavel) REFERENCES usuario (id_usuario)
 );
