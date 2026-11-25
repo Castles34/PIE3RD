@@ -1,12 +1,8 @@
-# Copie este arquivo para "config.properties" (mesma pasta, ao lado do pom.xml)
-# e ajuste os valores. O config.properties NAO vai para o GitHub.
-
-# No PC do tecnico (servidor):  localhost
-# Nos PCs do caixa:             IP do servidor, ex.: 192.168.0.10
+# Copie este arquivo para "config.properties" e ajuste os valores.
+# O config.properties NAO vai para o GitHub (tem senha).
 db.host=localhost
 db.porta=3306
 db.banco=os_manutencao
-
-# Usuario criado no MySQL para o sistema (nao use o root)
 db.usuario=os_app
 db.senha=TROQUE_ESTA_SENHA
+#db.mysqldump=C:/Program Files/MySQL/MySQL Server 8.0/bin/mysqldump.exe

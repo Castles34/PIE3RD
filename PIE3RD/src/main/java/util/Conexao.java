@@ -58,6 +58,11 @@ public class Conexao {
                 c.getProperty("db.senha", "").trim());
     }
 
+    /** Lê qualquer valor do config.properties (usado pelo backup). */
+    public static String propriedade(String chave, String padrao) throws SQLException {
+        return config().getProperty(chave, padrao).trim();
+    }
+
     /** Abre e fecha uma conexão só para conferir se o servidor responde. */
     public static void testarConexao() throws SQLException {
         try (Connection con = getConnection()) {

@@ -4,12 +4,15 @@ import dao.OrdemServicoDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -21,6 +24,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -38,6 +42,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.OrdemServico;
 import model.Usuario;
+import util.Backup;
 
 /**
  * Tela principal. O conteúdo muda conforme o perfil:
@@ -106,7 +111,7 @@ public class TelaPrincipal extends JFrame {
         JMenu mnSistema = new JMenu("Sistema");
         if (usuario.isAdministrador()) {
             JMenuItem miBackup = new JMenuItem("Backup do banco");
-            miBackup.addActionListener(e -> emConstrucao("Backup"));
+            miBackup.addActionListener(e -> fazerBackup());
             mnSistema.add(miBackup);
         }
         JMenuItem miSair = new JMenuItem("Sair (trocar usuário)");
@@ -345,6 +350,26 @@ public class TelaPrincipal extends JFrame {
 
     private void abrirClientes() {
         new TelaCliente(true).setVisible(true);
+    }
+
+    /** Backup do banco (RNF07): o técnico escolhe a pasta e o sistema gera o .sql. */
+    private void fazerBackup() {
+        JFileChooser escolha = new JFileChooser();
+        escolha.setDialogTitle("Escolha a pasta para salvar o backup");
+        escolha.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (escolha.showDialog(this, "Salvar aqui") != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        try {
+            File arquivo = Backup.gerar(escolha.getSelectedFile());
+            JOptionPane.showMessageDialog(this,
+                    "Backup gerado com sucesso:\n" + arquivo.getAbsolutePath());
+        } catch (IOException ex) {
+            erro("Não foi possível gerar o backup:\n" + ex.getMessage());
+        } finally {
+            setCursor(Cursor.getDefaultCursor());
+        }
     }
 
     private void abrirListaOS() {
