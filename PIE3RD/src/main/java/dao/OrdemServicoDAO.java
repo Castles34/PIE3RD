@@ -119,6 +119,12 @@ public class OrdemServicoDAO {
     /** Filtros opcionais: passe null (ou texto vazio) para ignorar um filtro. */
     public List<OrdemServico> filtrar(String status, String tipo,
             LocalDate dataInicio, LocalDate dataFim) throws SQLException {
+        return filtrar(status, tipo, dataInicio, dataFim, null);
+    }
+
+    /** Igual ao anterior, com busca por parte do nome ou do WhatsApp do cliente. */
+    public List<OrdemServico> filtrar(String status, String tipo,
+            LocalDate dataInicio, LocalDate dataFim, String termoCliente) throws SQLException {
         StringBuilder sql = new StringBuilder(SELECT_BASE + "WHERE 1 = 1 ");
         List<Object> params = new ArrayList<>();
         if (status != null && !status.isEmpty()) {
@@ -128,6 +134,12 @@ public class OrdemServicoDAO {
         if (tipo != null && !tipo.isEmpty()) {
             sql.append("AND o.tipo_equipamento = ? ");
             params.add(tipo);
+        }
+        if (termoCliente != null && !termoCliente.trim().isEmpty()) {
+            sql.append("AND (c.nome LIKE ? OR c.whatsapp LIKE ?) ");
+            String f = "%" + termoCliente.trim() + "%";
+            params.add(f);
+            params.add(f);
         }
         if (dataInicio != null) {
             sql.append("AND o.data_entrada >= ? ");

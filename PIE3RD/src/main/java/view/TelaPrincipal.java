@@ -348,7 +348,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void abrirListaOS() {
-        emConstrucao("Consulta de OS");
+        new TelaConsultaOS(usuario, this::carregarPainel).setVisible(true);
     }
 
     private void emConstrucao(String nome) {
