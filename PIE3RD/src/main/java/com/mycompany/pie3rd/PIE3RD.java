@@ -1,5 +1,6 @@
 package com.mycompany.pie3rd;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -10,11 +11,11 @@ import view.TelaLogin;
 public class PIE3RD {
 
     public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignorada) {
-            // segue com o visual padrão
-        }
+        // Visual moderno (FlatLaf) em todas as telas, com cantos arredondados
+        UIManager.put("Button.arc", 10);
+        UIManager.put("Component.arc", 10);
+        UIManager.put("TextComponent.arc", 8);
+        FlatLightLaf.setup();
 
         try {
             Conexao.testarConexao(); // confere se o MySQL do servidor está respondendo
